@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "es2015",
+      "module": "commonjs",
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "declaration": true,
+      "allowSyntheticDefaultImports": true,
+      "outDir": "./lib",
+      "strict": true
+    },
+    "include": ["src"],
+    "exclude": ["**/__test__/*"]
+}
