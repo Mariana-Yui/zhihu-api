@@ -1,8 +1,8 @@
 import Koa = require('koa');
 import koaBody = require('koa-body');
 import jsonError = require('koa-json-error');
-import router = require('./router/index');
 import mongoose = require('mongoose');
+import router = require('./router/index');
 const parameter = require('koa-parameter');
 const { address } = require('./config');
 const app = new Koa();

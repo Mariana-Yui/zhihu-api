@@ -1,36 +1,32 @@
+import User = require('../model/user');
+
 class UsersController {
-    private static readonly db = ['李雷', '韩梅梅'];
     public async find(ctx: any) {
-        ctx.body = '这是用户列表';
+        ctx.body = User.find();
     }
-    public async findId(ctx: any) {
-        if (ctx.params.id * 1 > UsersController.db.length) {
-            ctx.throw(424, "array out of range");
-        }
-        ctx.body = `用户id为${ctx.params.id}`;        
+    public async findById(ctx: any) {
+        const user = await User.findById(ctx.params.id);
+        if (!user) { ctx.throw(404, '用户不存在'); }
+        ctx.body = user;
     }
     public async create(ctx: any) {
         ctx.verifyParams({
             name: 'string',
-            age: { type: 'int', require: false }
         });
-        ctx.body = ctx.request.body;
+        const user = await new User(ctx.request.body);
+        ctx.body = user;
     }
     public async update(ctx: any) {
-        if (ctx.params.id * 1 > UsersController.db.length) {
-            ctx.throw(424, "array out of range");
-        }
         ctx.verifyParams({
             name: 'string',
-            age: { type: 'int', require: false }
         });
-        ctx.body = `更新用户id为${ctx.params.id}`;        
+        const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body);
+        if (!user) { ctx.throw(404, '用户不存在'); }
+        ctx.body = user;
     }
     public async delete(ctx: any) {
-        if (ctx.params.id * 1 > UsersController.db.length) {
-            ctx.throw(424, "array out of range");
-        }
-        ctx.body = `删除用户id为${ctx.params.id}`;
+        const user = await User.findByIdAndDelete(ctx.params.id, ctx.request.body);
+        ctx.body = user;
     }
 }
 
