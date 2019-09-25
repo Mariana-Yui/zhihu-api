@@ -1,9 +1,17 @@
 import Koa = require('koa');
-import bodyParser = require('koa-body');
+import koaBody = require('koa-body');
+import jsonError = require('koa-json-error');
 import router = require('./router/index');
+const parameter = require('koa-parameter');
+const { address } = require('./config');
 const app = new Koa();
 
-app.use(bodyParser());
+
+app.use(jsonError({
+    postFormat: (err, {stack, ...rest}) => process.env.NODE_ENV === 'production' ? rest : {stack, ...rest}
+}));
+app.use(koaBody());
+app.use(parameter(app));
 router(app);
 
 

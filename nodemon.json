@@ -8,6 +8,9 @@
     "watch": [
         "src"
     ],
+    "env": {
+        "NODE_ENV": "production"
+    },
     "exec": "npm start",
     "ext": "ts"
 }
