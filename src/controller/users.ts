@@ -2,7 +2,7 @@ import User = require('../model/user');
 
 class UsersController {
     public async find(ctx: any) {
-        ctx.body = User.find();
+        ctx.body = await User.find();
     }
     public async findById(ctx: any) {
         const user = await User.findById(ctx.params.id);
@@ -13,7 +13,7 @@ class UsersController {
         ctx.verifyParams({
             name: 'string',
         });
-        const user = await new User(ctx.request.body);
+        const user = await new User(ctx.request.body).save();
         ctx.body = user;
     }
     public async update(ctx: any) {
@@ -26,6 +26,7 @@ class UsersController {
     }
     public async delete(ctx: any) {
         const user = await User.findByIdAndDelete(ctx.params.id, ctx.request.body);
+        if (!user) { ctx.throw(404, '用户不存在'); }
         ctx.body = user;
     }
 }
