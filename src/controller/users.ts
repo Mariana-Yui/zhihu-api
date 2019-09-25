@@ -11,14 +11,19 @@ class UsersController {
     }
     public async create(ctx: any) {
         ctx.verifyParams({
-            name: 'string',
+            username: 'string',
+            password: 'string'
         });
+        const { name } = ctx.request.body;
+        const isRepeatedUser = await User.findOne({ name });
+        if (isRepeatedUser) { ctx.throw(409, '用户名已存在'); }
         const user = await new User(ctx.request.body);
         ctx.body = user;
     }
     public async update(ctx: any) {
         ctx.verifyParams({
-            name: 'string',
+            username: { type: 'string', required: false },
+            password: { type: 'string', required: false }
         });
         const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body);
         if (!user) { ctx.throw(404, '用户不存在'); }

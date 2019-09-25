@@ -17,7 +17,7 @@ const app = new Koa();
     }
 })({
     useNewUrlParser: true,
-    useUnifiedTopology: true 
+    useUnifiedTopology: true
 });
 
 app.use(jsonError({
