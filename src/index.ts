@@ -1,5 +1,5 @@
 import Koa = require('koa');
-import bodyParser = require('koa-bodyparser');
+import bodyParser = require('koa-body');
 import router = require('./router/index');
 const app = new Koa();
 
