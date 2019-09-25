@@ -2,7 +2,7 @@ import User = require('../model/user');
 
 class UsersController {
     public async find(ctx: any) {
-        ctx.body = User.find();
+        ctx.body = await User.find();
     }
     public async findById(ctx: any) {
         const user = await User.findById(ctx.params.id);
@@ -17,7 +17,7 @@ class UsersController {
         const { name } = ctx.request.body;
         const isRepeatedUser = await User.findOne({ name });
         if (isRepeatedUser) { ctx.throw(409, '用户名已存在'); }
-        const user = await new User(ctx.request.body);
+        const user = await new User(ctx.request.body).save();
         ctx.body = user;
     }
     public async update(ctx: any) {
@@ -31,6 +31,7 @@ class UsersController {
     }
     public async delete(ctx: any) {
         const user = await User.findByIdAndDelete(ctx.params.id, ctx.request.body);
+        if (!user) { ctx.throw(404, '用户不存在'); }
         ctx.body = user;
     }
 }
