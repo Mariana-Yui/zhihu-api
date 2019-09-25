@@ -2,10 +2,19 @@ import Koa = require('koa');
 import koaBody = require('koa-body');
 import jsonError = require('koa-json-error');
 import router = require('./router/index');
+import mongoose = require('mongoose');
 const parameter = require('koa-parameter');
 const { address } = require('./config');
 const app = new Koa();
 
+(async options => {
+    try {
+        await mongoose.connect(address, options);
+        console.log('Connect Mongodb successfully!');
+    } catch (err) {
+        console.error(err);
+    }
+})({ useNewUrlParser: true });
 
 app.use(jsonError({
     postFormat: (err, {stack, ...rest}) => process.env.NODE_ENV === 'production' ? rest : {stack, ...rest}
