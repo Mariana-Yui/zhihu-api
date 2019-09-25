@@ -9,15 +9,19 @@ const app = new Koa();
 
 (async options => {
     try {
+        console.log(address);
         await mongoose.connect(address, options);
         console.log('Connect Mongodb successfully!');
     } catch (err) {
         console.error(err);
     }
-})({ useNewUrlParser: true });
+})({
+    useNewUrlParser: true,
+    useUnifiedTopology: true 
+});
 
 app.use(jsonError({
-    postFormat: (err, {stack, ...rest}) => process.env.NODE_ENV === 'production' ? rest : {stack, ...rest}
+    postFormat: (err, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
 }));
 app.use(koaBody());
 app.use(parameter(app));
