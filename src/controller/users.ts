@@ -1,4 +1,6 @@
+import jsonwebtoken from 'jsonwebtoken';
 import User = require('../model/user');
+const { secret } = require('../config');
 
 class UsersController {
     public async find(ctx: any) {
@@ -33,6 +35,17 @@ class UsersController {
         const user = await User.findByIdAndDelete(ctx.params.id, ctx.request.body);
         if (!user) { ctx.throw(404, '用户不存在'); }
         ctx.body = user;
+    }
+    public async login(ctx: any) {
+        ctx.verifyParams({
+            username: { type: 'string', required: true },
+            password: { type: 'string', required: true }
+        });
+        const user = await User.findOne(ctx.request.body);
+        if (!user) { ctx.throw(404, '用户不存在'); }
+        const { _id, username } = user;
+        const token = jsonwebtoken.sign({ _id, username }, secret, { 'expiresIn': '1d' });
+        ctx.body = { token };
     }
 }
 
