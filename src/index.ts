@@ -27,7 +27,7 @@ app.use(jsonError({
 app.use(koaBody({
     multipart: true,
     formidable: {
-        uploadDir: path.join(__dirname, 'public/upload'),
+        uploadDir: path.join(__dirname, '../public/upload'),
         keepExtensions: true,
     },
 }));

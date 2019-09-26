@@ -9,8 +9,8 @@ class HomeController {
         `;
     }
     public async upload(ctx: any) {
-        const file  = ctx.request.files && ctx.request.file;
-        ctx.body = {file: file.name};
+        const file = ctx.request.files && ctx.request.files;
+        ctx.body = { file: file.name };
     }
 }
 
