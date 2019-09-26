@@ -1,3 +1,11 @@
 {
+    "rules": {
+        "member-access": false,
+        "forin": true,
+        "no-default-export": true,
+        "no-console": false,
+        "object-literal-sort-keys": false,
+        "no-var-requires": false
+    },
     "extends": ["tslint:recommended", "tslint-config-prettier"]
 }

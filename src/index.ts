@@ -2,6 +2,7 @@ import Koa = require('koa');
 import koaBody = require('koa-body');
 import jsonError = require('koa-json-error');
 import mongoose = require('mongoose');
+import path = require('path');
 import router = require('./router/index');
 const parameter = require('koa-parameter');
 const { address } = require('./config');
@@ -23,7 +24,13 @@ const app = new Koa();
 app.use(jsonError({
     postFormat: (err, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
 }));
-app.use(koaBody());
+app.use(koaBody({
+    multipart: true,
+    formidable: {
+        uploadDir: path.join(__dirname, 'public/upload'),
+        keepExtensions: true,
+    },
+}));
 app.use(parameter(app));
 router(app);
 
