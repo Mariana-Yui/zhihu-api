@@ -1,3 +1,5 @@
+import path = require('path');
+
 class HomeController {
     public async index(ctx: any) {
         ctx.body = `
@@ -9,8 +11,9 @@ class HomeController {
         `;
     }
     public async upload(ctx: any) {
-        const file = ctx.request.files && ctx.request.files;
-        ctx.body = { file: file.name };
+        const file = ctx.request.files && ctx.request.files[""];
+        const basename = path.basename(file.path);
+        ctx.body = { url: `${ctx.origin}/upload/${basename}` };
     }
 }
 
