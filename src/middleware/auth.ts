@@ -13,7 +13,6 @@ exports.auth = async (ctx: any, next: any) => {
     }
 }
 exports.isOwner = async (ctx: any, next: any) => {
-    console.log(ctx.state.user, ctx.params.id);
     if (ctx.state.user._id !== ctx.params.id) {
         ctx.throw(401, '没有权限');
     }
