@@ -7,7 +7,11 @@ class UsersController {
         ctx.body = await User.find();
     }
     public async findById(ctx: any) {
-        const user = await User.findById(ctx.params.id);
+        const { field } = ctx.query;
+        const selectStr = field
+            && (field as string).split(';').filter(f => f).map(f => `+${f} `).join('')
+            || '';
+        const user = await User.findById(ctx.params.id).select(selectStr);
         if (!user) { ctx.throw(404, '用户不存在'); }
         ctx.body = user;
     }
@@ -27,12 +31,12 @@ class UsersController {
             username: { type: 'string', required: false },
             password: { type: 'string', required: false },
             avatar_url: { type: 'string', required: false },
-            gender: { type: 'string', required: false, select: false },
+            gender: { type: 'string', required: false },
             headline: { type: 'string', required: false },
-            locations: { type: 'array', itemType: 'string', required: false, select: false },
-            business: { type: 'string', required: false, select: false },
-            employments: { type: 'array', itemType: 'object', required: false, select: false },
-            educations: { type: 'array', itemType: 'object', required: false, select: false },
+            locations: { type: 'array', itemType: 'string', required: false },
+            business: { type: 'string', required: false },
+            employments: { type: 'array', itemType: 'object', required: false },
+            educations: { type: 'array', itemType: 'object', required: false },
         });
         const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body);
         if (!user) { ctx.throw(404, '用户不存在'); }

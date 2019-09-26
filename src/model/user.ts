@@ -5,23 +5,27 @@ const userSchema = new Schema({
     username: { type: String, required: true },
     password: { type: String, required: true, select: false },
     avatar_url: { type: String },
-    gender: { type: String, enum: ['male', 'female'], default: 'male' },
+    gender: { type: String, enum: ['male', 'female'], default: 'male', select: false },
     headline: { type: String },
-    locations: { type: [{ type: String }] },
-    business: { type: String },
+    locations: { type: [{ type: String }], select: false },
+    business: { type: String, select: false },
     employments: {
         type: [{
             company: { type: String },
             job: { type: String },
-        }]
+        }], 
+        select: false
     },
-    educations: [{
-        school: { type: String },
-        major: { type: String },
-        diploma: { type: Number, enum: [1, 2, 3, 4, 5] },
-        entrance_year: { type: Number },
-        graduate_year: { type: Number },
-    }]
+    educations: {
+        type: [{
+            school: { type: String },
+            major: { type: String },
+            diploma: { type: Number, enum: [1, 2, 3, 4, 5] },
+            entrance_year: { type: Number },
+            graduate_year: { type: Number },
+        }],
+        select: false
+    }
 });
 
 export = model('User', userSchema);
