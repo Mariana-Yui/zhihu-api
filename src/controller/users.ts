@@ -1,4 +1,4 @@
-import jsonwebtoken from 'jsonwebtoken';
+import jsonwebtoken = require('jsonwebtoken');
 import User = require('../model/user');
 const { secret } = require('../config');
 
@@ -43,7 +43,7 @@ class UsersController {
         });
         const user = await User.findOne(ctx.request.body);
         if (!user) { ctx.throw(404, '用户不存在'); }
-        const { _id, username } = user;
+        const { _id, username } = user as any;
         const token = jsonwebtoken.sign({ _id, username }, secret, { 'expiresIn': '1d' });
         ctx.body = { token };
     }
