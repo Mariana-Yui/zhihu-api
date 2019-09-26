@@ -16,8 +16,8 @@ class UsersController {
             username: 'string',
             password: 'string'
         });
-        const { name } = ctx.request.body;
-        const isRepeatedUser = await User.findOne({ name });
+        const { username } = ctx.request.body;
+        const isRepeatedUser = await User.findOne({ username });
         if (isRepeatedUser) { ctx.throw(409, '用户名已存在'); }
         const user = await new User(ctx.request.body).save();
         ctx.body = user;
