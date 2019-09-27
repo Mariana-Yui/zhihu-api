@@ -1,5 +1,6 @@
 import jsonwebtoken = require('jsonwebtoken');
 import jwt = require('koa-jwt');
+import User = require('../model/user');
 const { secret } = require('../config');
 
 exports.auth = async (ctx: any, next: any) => {
@@ -12,6 +13,7 @@ exports.auth = async (ctx: any, next: any) => {
         ctx.throw(401, '没有权限');
     }
 }
+
 exports.isOwner = async (ctx: any, next: any) => {
     console.log(ctx.state.user, ctx.params.id);
     if (ctx.state.user._id !== ctx.params.id) {
@@ -19,4 +21,11 @@ exports.isOwner = async (ctx: any, next: any) => {
     }
     await next();
 }
+
 exports.auth2 = jwt({ secret });
+
+exports.checkExist = async (ctx: any, next: any) => {
+    const user = await User.findById(ctx.params.id);
+    if (!user) { ctx.throw(404); }
+    await next();
+}
