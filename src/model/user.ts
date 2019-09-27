@@ -7,21 +7,26 @@ const userSchema = new Schema({
     avatar_url: { type: String },
     gender: { type: String, enum: ['male', 'female'], default: 'male' },
     headline: { type: String },
-    locations: { type: [{ type: String }] },
-    business: { type: String },
+    locations: { type: [{ type: String }], select: false },
+    business: { type: String, select: false },
     employments: {
         type: [{
             company: { type: String },
             job: { type: String },
-        }]
+        }],
+        select: false
     },
-    educations: [{
-        school: { type: String },
-        major: { type: String },
-        diploma: { type: Number, enum: [1, 2, 3, 4, 5] },
-        entrance_year: { type: Number },
-        graduate_year: { type: Number },
-    }]
+    educations: {
+        type: [{
+            school: { type: String },
+            major: { type: String },
+            diploma: { type: Number, enum: [1, 2, 3, 4, 5] },
+            entrance_year: { type: Number },
+            graduate_year: { type: Number },
+        }],
+        select: false
+    },
+    following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }]}
 });
 
 export = model('User', userSchema);

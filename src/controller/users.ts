@@ -27,12 +27,12 @@ class UsersController {
             username: { type: 'string', required: false },
             password: { type: 'string', required: false },
             avatar_url: { type: 'string', required: false },
-            gender: { type: 'string', required: false, select: false },
+            gender: { type: 'string', required: false },
             headline: { type: 'string', required: false },
-            locations: { type: 'array', itemType: 'string', required: false, select: false },
-            business: { type: 'string', required: false, select: false },
-            employments: { type: 'array', itemType: 'object', required: false, select: false },
-            educations: { type: 'array', itemType: 'object', required: false, select: false },
+            locations: { type: 'array', itemType: 'string', required: false },
+            business: { type: 'string', required: false },
+            employments: { type: 'array', itemType: 'object', required: false },
+            educations: { type: 'array', itemType: 'object', required: false },
         });
         const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body);
         if (!user) { ctx.throw(404, '用户不存在'); }
@@ -53,6 +53,37 @@ class UsersController {
         const { _id, username } = user as any;
         const token = jsonwebtoken.sign({ _id, username }, secret, { 'expiresIn': '1d' });
         ctx.body = { token };
+    }
+    /** 粉丝列表 */
+    public async listFollower(ctx: any) {
+        const users: any = await User.find({ following: ctx.params.id });
+        ctx.body = users;
+    }
+    /** 关注列表 */
+    public async listFollowing(ctx: any) {
+        const users: any = await User.findById(ctx.params.id).select('+following').populate('User');
+        if (!users) { ctx.throw(404); }
+        const { following } = users;
+        ctx.body = { following };
+    }
+    /** 关注用户 */
+    public async follow(ctx: any) {
+        const owner: any = await User.findById(ctx.state.user._id).select('+following');
+        if (!owner.following.map((id: { toString: () => void; }) => id.toString()).includes(ctx.params.id)) {
+            owner.following.push(ctx.params.id);
+            owner.save();
+        }
+        ctx.status = 204;
+    }
+    /** 取消关注 */
+    public async unfollow(ctx: any) {
+        const owner: any = await User.findById(ctx.state.user._id).select('+following');
+        const index = owner.foolowing.map((id: { toString: () => void }) => id.toString()).indexOf(ctx.params.id);
+        if (owner.following.map((id: { toString: () => void; }) => id.toString()).includes(ctx.params.id)) {
+            owner.following.splice(index, 1);
+            owner.save();
+        }
+        ctx.status = 204;
     }
 }
 
