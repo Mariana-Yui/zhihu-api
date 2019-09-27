@@ -61,7 +61,7 @@ class UsersController {
     }
     /** 关注列表 */
     public async listFollowing(ctx: any) {
-        const users: any = await User.findById(ctx.params.id).select('+following').populate('User');
+        const users: any = await User.findById(ctx.params.id).select('+following').populate('following');
         if (!users) { ctx.throw(404); }
         const { following } = users;
         ctx.body = { following };
