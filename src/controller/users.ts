@@ -1,27 +1,43 @@
 import jsonwebtoken = require('jsonwebtoken');
 import User = require('../model/user');
+import Topic = require('../model/Topics');
 const { secret } = require('../config');
 
 class UsersController {
+    static readonly diploma: Array<string> =
+        ['高中及以下', '大专', '本科', '硕士', '博士'];
     public async find(ctx: any) {
-        let { perPage = 10, page } = ctx.query;
+        let { perPage = 10, page = 1 } = ctx.query;
         page = Math.max(page * 1, 1) - 1;
-        perPage = Math.max(page * 1, 1);
+        perPage = Math.max(perPage * 1, 1);
         const users = await User
             .find({ name: ctx.query.q })
-            .limit(page).skip(perPage);
+            .limit(perPage).skip(perPage * page);
         ctx.body = users;
     }
     public async findById(ctx: any) {
-        const user = await User.findById(ctx.params.id);
+        const { field = '' } = ctx.query;
+        const selectStr = field.split(';').filter((f: any) => f).map((f: any) => `+${f} `).join('');
+        const user = await User
+            .findById(ctx.params.id)
+            .select(selectStr)
+            .populate('following location business');
         if (!user) { ctx.throw(404, '用户不存在'); }
         ctx.body = user;
     }
     public async create(ctx: any) {
         ctx.verifyParams({
             username: 'string',
-            password: 'string'
+            password: 'string',
+            avatar_url: { type: 'string', required: false },
+            gender: { type: 'string', required: false },
+            headline: { type: 'string', required: false },
+            locations: { type: 'array', itemType: 'string', required: false },
+            business: { type: 'string', required: false },
+            employments: { type: 'array', itemType: 'object', required: false },
+            educations: { type: 'array', itemType: 'object', required: false },
         });
+        await UsersController.nameToId(ctx);
         const { username } = ctx.request.body;
         const isRepeatedUser = await User.findOne({ username });
         if (isRepeatedUser) { ctx.throw(409, '用户名已存在'); }
@@ -40,6 +56,7 @@ class UsersController {
             employments: { type: 'array', itemType: 'object', required: false },
             educations: { type: 'array', itemType: 'object', required: false },
         });
+        await UsersController.nameToId(ctx);
         const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body);
         if (!user) { ctx.throw(404, '用户不存在'); }
         ctx.body = user;
@@ -90,6 +107,37 @@ class UsersController {
             owner.save();
         }
         ctx.status = 204;
+    }
+    private static async findTopicId(ctx: any, name: string) {
+        const user = await Topic.findOne({ name });
+        if (!user) { ctx.throw(404, `找不到${name}`); }
+        return (user as any)._id.toString();
+    }
+    private static async nameToId(ctx: any) {
+        for (const key in ctx.request.body) {
+            if (key === 'locations') {
+                const arr = await Promise.all((ctx.request.body[key] as Array<string>).map(name => UsersController.findTopicId(ctx, name)));
+                ctx.request.body[key] = arr;
+            } else if (key === 'business') {
+                ctx.request.body[key] = await UsersController.findTopicId(ctx, ctx.request.body[key]);
+            } else if (key === 'employments') {
+                for (const obj of ctx.request.body[key] as Array<any>) {
+                    for (const key1 in obj) {
+                        obj[key1] = await UsersController.findTopicId(ctx, obj[key1]);
+                    }
+                }
+            } else if (key === 'educations') {
+                for (const obj of ctx.request.body[key] as Array<any>) {
+                    for (const key1 in obj) {
+                        if (/_year$/.test(key1)) continue;
+                        if (key1 === 'diploma') {
+                            obj[key1] = UsersController.diploma[obj[key1]];
+                        }
+                        obj[key1] = await UsersController.findTopicId(ctx, obj[key1]);
+                    }
+                }
+            }
+        }
     }
 }
 

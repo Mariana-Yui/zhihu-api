@@ -7,20 +7,20 @@ const userSchema = new Schema({
     avatar_url: { type: String },
     gender: { type: String, enum: ['male', 'female'], default: 'male' },
     headline: { type: String },
-    locations: { type: [{ type: String }], select: false },
-    business: { type: String, select: false },
+    locations: { type: [{ type: Schema.Types.ObjectId, ref: 'Topic' }], select: false },
+    business: { type: Schema.Types.ObjectId, ref: 'Topic', select: false },
     employments: {
         type: [{
-            company: { type: String },
-            job: { type: String },
+            company: { type: Schema.Types.ObjectId, ref: 'Topic' },
+            job: { type: Schema.Types.ObjectId, ref: 'Topic' },
         }],
         select: false
     },
     educations: {
         type: [{
-            school: { type: String },
-            major: { type: String },
-            diploma: { type: Number, enum: [1, 2, 3, 4, 5] },
+            school: { type: Schema.Types.ObjectId, ref: 'Topic' },
+            major: { type: Schema.Types.ObjectId, ref: 'Topic' },
+            diploma: { type: Schema.Types.ObjectId, ref: 'Topic' },
             entrance_year: { type: Number },
             graduate_year: { type: Number },
         }],

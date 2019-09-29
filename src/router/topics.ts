@@ -5,7 +5,7 @@ const topicsRouter = new Router({prefix: '/topics'});
 
 topicsRouter.get('/', find);
 topicsRouter.get('/:id', findById);
-topicsRouter.post('/create', auth2, create);
-topicsRouter.patch('/update', auth2, update);
+topicsRouter.post('/', auth2, create);
+topicsRouter.patch('/:id', auth2, update);
 
 export = topicsRouter;

@@ -4,16 +4,18 @@ class TopicsController {
     async find(ctx: any) {
         let { perPage = 10, page } = ctx.query;
         page = Math.max(page * 1, 1) - 1;
-        perPage = Math.max(page * 1, 1);
+        perPage = Math.max(perPage * 1, 1);
         const topics = await Topic
             .find({ name: new RegExp(ctx.query.q) })
-            .limit(page).skip(perPage);
+            .limit(perPage).skip(perPage * page);
         ctx.body = topics;
     }
     async findById(ctx: any) {
         const { field = '' } = ctx.query;
         const selectStr = field.split(';').filter((f: any) => f).map((f: any) => `+${f} `).join('');
-        const topic = await Topic.findById(ctx.params.id).select(selectStr);
+        const topic = await Topic
+            .findById(ctx.params.id)
+            .select(selectStr)
         if (!topic) { ctx.throw(404); }
         ctx.body = topic;
     }
