@@ -26,7 +26,7 @@ const userSchema = new Schema({
         }],
         select: false
     },
-    following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }]}
+    following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], select: false }
 });
 
 export = model('User', userSchema);
