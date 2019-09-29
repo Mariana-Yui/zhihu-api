@@ -4,7 +4,13 @@ const { secret } = require('../config');
 
 class UsersController {
     public async find(ctx: any) {
-        ctx.body = await User.find();
+        let { perPage = 10, page } = ctx.query;
+        page = Math.max(page * 1, 1) - 1;
+        perPage = Math.max(page * 1, 1);
+        const users = await User
+            .find({ name: ctx.query.q })
+            .limit(page).skip(perPage);
+        ctx.body = users;
     }
     public async findById(ctx: any) {
         const user = await User.findById(ctx.params.id);

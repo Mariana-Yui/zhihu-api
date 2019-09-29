@@ -2,7 +2,12 @@ import Topic = require('../model/Topics');
 
 class TopicsController {
     async find(ctx: any) {
-        const topics = await Topic.find();
+        let { perPage = 10, page } = ctx.query;
+        page = Math.max(page * 1, 1) - 1;
+        perPage = Math.max(page * 1, 1);
+        const topics = await Topic
+            .find({ name: new RegExp(ctx.query.q) })
+            .limit(page).skip(perPage);
         ctx.body = topics;
     }
     async findById(ctx: any) {
